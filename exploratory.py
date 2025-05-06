@@ -91,24 +91,28 @@ if __name__ == '__main__':
         [0.9511025886864811, 0.45347313237221487]
     ])
 
-    # ## PLOT 
-    # plt.plot(*zip(*fgMuapp), '+')
-    # plt.xlabel(r'$f_g$ [-]', fontsize=14)
-    # plt.ylabel(r'$\mu_{app}$ [Pa.s]', fontsize=14)
-    # plt.grid()
+    ## PLOT 
+    plt.plot(*zip(*fgMuapp), '+')
+    plt.xlabel(r'$f_g$ [-]', fontsize=14)
+    plt.ylabel(r'$\mu_{app}$ [Pa.s]', fontsize=14)
+    plt.grid()
     # plt.show()
+    plt.savefig('muApp_fg.png', dpi=300)
+    plt.close()
 
     ## GET grad(p)
     gradP = - fgMuapp[:,1] * ut / core['k'] # [Pa/m]
     # gradP *= 4.419e-5 # [psi/ft]
 
-    # ## PLOT
-    # plt.plot(fgMuapp[:,0], gradP, '+')
-    # plt.xlabel(r'$f_g$ [-]', fontsize=14)
-    # # plt.ylabel(r'$\nabla p$ [Pa/m]', fontsize=14)
+    ## PLOT
+    plt.plot(fgMuapp[:,0], gradP*4.419e-5, '+') # convert from [Pa/m] to [psi/ft]
+    plt.xlabel(r'$f_g$ [-]', fontsize=14)
+    plt.ylabel(r'$\nabla p$ [psi/ft]', fontsize=14)
     # plt.ylabel(r'$\nabla p$ [psi/ft]', fontsize=14)
-    # plt.grid()
+    plt.grid()
     # plt.show()
+    plt.savefig('gradP_fg.png', dpi=300)
+    plt.close()
 
     ## EVALUATING PHASE VELOCITIES
     fg = fgMuapp[:,0]
@@ -121,28 +125,30 @@ if __name__ == '__main__':
     # uo *= 283465 # convert from [m/s] to [ft/day]
     ut_calc = uw + ug + uo 
 
-    # ## SCATTER PLOT
-    # scatter = plt.scatter(uw, ug, c=np.abs(gradP), cmap='viridis', edgecolor='k')
-    # cbar = plt.colorbar(scatter)
-    # cbar.set_label(r'$\nabla p$ [Pa/m]')
-    # plt.xlabel(r'$u_w$')
-    # plt.ylabel(r'$u_g$')
-    # plt.grid(True)
-    # plt.tight_layout()
+    ## SCATTER PLOT
+    scatter = plt.scatter(uw*283465, ug*283465, c=np.abs(gradP)*4.419e-5, cmap='viridis', edgecolor='k')
+    cbar = plt.colorbar(scatter)
+    cbar.set_label(r'$\nabla p$ [psi/ft]')
+    plt.xlabel(r'$u_w$ [ft/day]')
+    plt.ylabel(r'$u_g$ [ft/day]')
+    plt.grid(True)
+    plt.tight_layout()
     # plt.show()
-    # plt.close()
+    plt.savefig('uwug_gradP.png', dpi=300)
+    plt.close()
 
-    # plt.plot(fg,uw,c='b',label=r'$u_w$')
-    # plt.plot(fg,ug,c='g',label=r'$u_g$')
-    # plt.plot(fg,uo,c='r',label=r'$u_o$')
-    # plt.plot(fg,ut_calc,c='k',label=f'$u_t = {ut*283465:.2f}$')
-    # plt.xlabel(r'$f_g$ [-]')
-    # plt.ylabel(r'$u$ [ft/day]')
-    # plt.grid(True)
-    # plt.legend()
-    # plt.tight_layout()
+    plt.plot(fg,uw*283465,c='b',label=r'$u_w$')
+    plt.plot(fg,ug*283465,c='g',label=r'$u_g$')
+    plt.plot(fg,uo*283465,c='r',label=r'$u_o$')
+    plt.plot(fg,ut_calc*283465,c='k',label=f'$u_t$')
+    plt.xlabel(r'$f_g$ [-]')
+    plt.ylabel(r'$u$ [ft/day]')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
     # plt.show()
-    # plt.close()
+    plt.savefig('velocities_fg.png', dpi=300)
+    plt.close()
 
     ## FIND Sw and So
     Sw = []
@@ -151,7 +157,7 @@ if __name__ == '__main__':
         res = minimize_scalar(func, bounds=(0, 1))
         Sw.append(res.x)
     Sw = np.array(Sw)
-    print(Sw)
+    # print(Sw)
 
     So = []
     for i in range(len(fg)):
@@ -159,7 +165,7 @@ if __name__ == '__main__':
         res = minimize_scalar(func, bounds=(0, 1))
         So.append(res.x)
     So = np.array(So)
-    print(So)
+    # print(So)
 
     ## PLOT
     Sg = 1.0 - Sw - So
@@ -171,7 +177,8 @@ if __name__ == '__main__':
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.savefig('saturations_fg.png', dpi=300)
     plt.close()
 
 
@@ -207,7 +214,7 @@ if __name__ == '__main__':
     }
 
     # Save to file
-    with open('data.json', 'w') as f:
+    with open('experimentalData.json', 'w') as f:
         json.dump(data, f, indent=4)
 
     # with open('data.json', 'r') as f:
