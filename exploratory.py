@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import json
 from scipy.interpolate import griddata
 from scipy.optimize import minimize_scalar
+from scipy.interpolate import RegularGridInterpolator
 
 class RelativePermeability:
 
@@ -159,14 +160,13 @@ if __name__ == '__main__':
     plt.savefig('uwug_gradP.png', dpi=300)
     plt.close()
 
-
     ## GRIDDATA
     uw_grid = np.linspace(min(uwug[:,0]), max(uwug[:,0]), 200)
     ug_grid = np.linspace(min(uwug[:,1]), max(uwug[:,1]), 200)
     uw_mesh, ug_mesh = np.meshgrid(uw_grid, ug_grid)
     grid_points = np.column_stack((uwug[:,0], uwug[:,1]))
     grad_P_grid = griddata(grid_points, uwug[:,2], (uw_mesh, ug_mesh), method='linear')
-    contourf = plt.contourf(uw_mesh, ug_mesh, grad_P_grid, levels=10, cmap='jet')
+    contourf = plt.contourf(uw_mesh, ug_mesh, grad_P_grid, levels=20, cmap='jet')
     plt.scatter(uwug[:,0], uwug[:,1], c=uwug[:,2], cmap='jet', edgecolor='k')
     scatter = plt.scatter(uw*283465, ug*283465, c=np.abs(gradP)*4.419e-5, cmap='jet', edgecolor='k')
     plt.plot([uw[0]*283465, uw[-1]*283465], [ug[0]*283465, ug[-1]*283465], 'k--')
@@ -182,6 +182,106 @@ if __name__ == '__main__':
     plt.savefig('uwug_gradP_griddata.png', dpi=300)
     plt.close()
 
+
+
+    ## DESIRED UT
+    def interpolate_gradP(ut_des, uw_des):
+        ug_des = ut_des - (5/4) * uw_des
+        uo_des = (1/4) * uw_des
+        interp_func = RegularGridInterpolator((ug_grid, uw_grid), grad_P_grid)
+        points = np.column_stack((ug_des, uw_des))
+        grad_P_des = interp_func(points)
+        return ug_des, grad_P_des, uo_des
+    
+    ut_des = 3.0 # [ft/day]
+    uw_des = np.linspace(0.1,1.7,20)
+
+    # ut_des = 2.3 # [ft/day]
+    # uw_des = np.linspace(0.1,1.1,10)
+
+    # ut_des = 4.0 # [ft/day]
+    # uw_des = np.linspace(0.1,1.3,20)
+
+    ug_des, grad_P_des, uo_des = interpolate_gradP(ut_des, uw_des)
+    contourf = plt.contourf(uw_mesh, ug_mesh, grad_P_grid, levels=20, cmap='jet')
+    plt.scatter(uwug[:,0], uwug[:,1], c=uwug[:,2], cmap='jet', edgecolor='k')
+    scatter = plt.scatter(uw_des, ug_des, c=grad_P_des, cmap='jet', edgecolor='k')
+    plt.plot([uw_des[0], uw_des[-1]], [ug_des[0], ug_des[-1]], 'k--')
+    cbar = plt.colorbar(contourf)
+    cbar.set_label('Pressure Gradient')
+    plt.xlabel(r'$u_w$ [ft/day]')
+    plt.ylabel(r'$u_g$ [ft/day]')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.xlim([0,1.8])
+    plt.ylim([0,7])
+    # plt.show()
+    plt.savefig('uwug_gradP_desired.png', dpi=300)
+    plt.close()
+
+    ## DIFFERENT UTs
+    ut_des_1 = 2.3 # [ft/day]
+    uw_des_1 = np.linspace(0.1,1.1,10)
+    ug_des_1, grad_P_des_1, uo_des_1 = interpolate_gradP(ut_des_1, uw_des_1)
+    fg_des_1 = ug_des_1 / (uw_des_1 + ug_des_1 + uo_des_1)
+
+    ut_des_2 = 3.0 # [ft/day]
+    uw_des_2 = np.linspace(0.1,1.7,20)
+    ug_des_2, grad_P_des_2, uo_des_2 = interpolate_gradP(ut_des_2, uw_des_2)
+    fg_des_2 = ug_des_2 / (uw_des_2 + ug_des_2 + uo_des_2)
+
+    ut_des_3 = 4.0 # [ft/day]
+    uw_des_3 = np.linspace(0.1,1.3,20)
+    ug_des_3, grad_P_des_3, uo_des_3 = interpolate_gradP(ut_des_3, uw_des_3)
+    fg_des_3 = ug_des_3 / (uw_des_3 + ug_des_3 + uo_des_3)
+
+    plt.plot(fg_des_1, grad_P_des_1, label=f'$u_t = {ut_des_1}$')
+    plt.plot(fg_des_2, grad_P_des_2, label=f'$u_t = {ut_des_2}$')
+    plt.plot(fg_des_3, grad_P_des_3, label=f'$u_t = {ut_des_3}$')
+    plt.xlabel(r'$f_g$ [-]', fontsize=14)
+    plt.ylabel(r'$\nabla p$ [psi/ft]', fontsize=14)
+    # plt.ylabel(r'$\nabla p$ [psi/ft]', fontsize=14)
+    plt.grid(True)
+    plt.legend()
+    # plt.show()
+    plt.savefig('differentUts.png', dpi=300)
+    plt.close()
+
+    contourf = plt.contourf(uw_mesh, ug_mesh, grad_P_grid, levels=20, cmap='jet')
+    plt.scatter(uwug[:,0], uwug[:,1], c=uwug[:,2], cmap='jet', edgecolor='k')
+    scatter = plt.scatter(uw_des_1, ug_des_1, c=grad_P_des_1, cmap='jet', edgecolor='k')
+    plt.plot([uw_des_1[0], uw_des_1[-1]], [ug_des_1[0], ug_des_1[-1]], 'k--')
+    scatter = plt.scatter(uw_des_2, ug_des_2, c=grad_P_des_2, cmap='jet', edgecolor='k')
+    plt.plot([uw_des_2[0], uw_des_2[-1]], [ug_des_2[0], ug_des_2[-1]], 'k--')
+    scatter = plt.scatter(uw_des_3, ug_des_3, c=grad_P_des_3, cmap='jet', edgecolor='k')
+    plt.plot([uw_des_3[0], uw_des_3[-1]], [ug_des_3[0], ug_des_3[-1]], 'k--')
+    cbar = plt.colorbar(contourf)
+    cbar.set_label('Pressure Gradient')
+    plt.xlabel(r'$u_w$ [ft/day]')
+    plt.ylabel(r'$u_g$ [ft/day]')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.xlim([0,1.8])
+    plt.ylim([0,7])
+    # plt.show()
+    plt.savefig('three_uwug_gradP_desired.png', dpi=300)
+    plt.close()
+
+
+    ## COMPARED DESIRED VS TANG
+    fg_des = ug_des / (uw_des + ug_des + uo_des)
+    plt.plot(fg_des, grad_P_des, c='b', label='Interpolated from experimental')
+    plt.plot(fgMuapp[:,0], -gradP*4.419e-5,'ko', label='(Tang, J., 2018)') # convert from [Pa/m] to [psi/ft]
+    plt.xlabel(r'$f_g$ [-]', fontsize=14)
+    plt.ylabel(r'$\nabla p$ [psi/ft]', fontsize=14)
+    # plt.ylabel(r'$\nabla p$ [psi/ft]', fontsize=14)
+    plt.grid(True)
+    plt.legend()
+    # plt.show()
+    plt.savefig('comparison_desiredVStang.png', dpi=300)
+    plt.close()
+    
+    ## PLOT VELOCITIES FG
     plt.plot(fg,uw*283465,c='b',label=r'$u_w$')
     plt.plot(fg,ug*283465,c='g',label=r'$u_g$')
     plt.plot(fg,uo*283465,c='r',label=r'$u_o$')
