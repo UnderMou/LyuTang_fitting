@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import json
-
+from scipy.interpolate import griddata
 from scipy.optimize import minimize_scalar
 
 class RelativePermeability:
@@ -126,7 +126,29 @@ if __name__ == '__main__':
     ut_calc = uw + ug + uo 
 
     ## SCATTER PLOT
+    uwug = np.array([
+        [0.08793709559635210, 0.8910891089108910,  93],
+        [0.18826995907137890, 0.8712871287128712, 181],
+        [0.24227026476232538, 0.8118811881188117, 237],
+        [0.29632661379345480, 0.8613861386138622, 198],
+        [0.74143810607475850, 0.8613861386138622, 196],
+        [1.25086187864069440, 0.8415841584158423, 158],
+        [1.74486354295807010, 0.8514851485148514, 144],
+        [1.24914491449144950, 2.5049504950495054, 217],
+        [0.74739907953059460, 2.4455445544554450, 200],
+        [0.48970670651970870, 1.6633663366336630, 204],
+        [0.49525499719783317, 2.4455445544554450, 204],
+        [0.49049640813137940, 3.1980198019801980, 206],
+        [0.25338722551500437, 2.4158415841584160, 194],
+        [0.08932289455360631, 3.5841584158415842, 104],
+        [0.22595655791994296, 4.1089108910891090, 201],
+        [0.19853098517398915, 5.8118811881188130, 201],
+        [0.08809503591868623, 6.1980198019801980, 107]
+    ])
+    
     scatter = plt.scatter(uw*283465, ug*283465, c=np.abs(gradP)*4.419e-5, cmap='viridis', edgecolor='k')
+    scatter = plt.scatter(uwug[:,0], uwug[:,1], c=uwug[:,2], cmap='viridis', edgecolor='k')
+    plt.plot([uw[0]*283465, uw[-1]*283465], [ug[0]*283465, ug[-1]*283465], 'k--')
     cbar = plt.colorbar(scatter)
     cbar.set_label(r'$\nabla p$ [psi/ft]')
     plt.xlabel(r'$u_w$ [ft/day]')
@@ -135,6 +157,29 @@ if __name__ == '__main__':
     plt.tight_layout()
     # plt.show()
     plt.savefig('uwug_gradP.png', dpi=300)
+    plt.close()
+
+
+    ## GRIDDATA
+    uw_grid = np.linspace(min(uwug[:,0]), max(uwug[:,0]), 200)
+    ug_grid = np.linspace(min(uwug[:,1]), max(uwug[:,1]), 200)
+    uw_mesh, ug_mesh = np.meshgrid(uw_grid, ug_grid)
+    grid_points = np.column_stack((uwug[:,0], uwug[:,1]))
+    grad_P_grid = griddata(grid_points, uwug[:,2], (uw_mesh, ug_mesh), method='linear')
+    contourf = plt.contourf(uw_mesh, ug_mesh, grad_P_grid, levels=10, cmap='jet')
+    plt.scatter(uwug[:,0], uwug[:,1], c=uwug[:,2], cmap='jet', edgecolor='k')
+    scatter = plt.scatter(uw*283465, ug*283465, c=np.abs(gradP)*4.419e-5, cmap='jet', edgecolor='k')
+    plt.plot([uw[0]*283465, uw[-1]*283465], [ug[0]*283465, ug[-1]*283465], 'k--')
+    cbar = plt.colorbar(contourf)
+    cbar.set_label('Pressure Gradient')
+    plt.xlabel(r'$u_w$ [ft/day]')
+    plt.ylabel(r'$u_g$ [ft/day]')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.xlim([0,1.8])
+    plt.ylim([0,7])
+    # plt.show()
+    plt.savefig('uwug_gradP_griddata.png', dpi=300)
     plt.close()
 
     plt.plot(fg,uw*283465,c='b',label=r'$u_w$')
