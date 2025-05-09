@@ -51,7 +51,7 @@ if __name__ == '__main__':
     infos = {
         'swc':0.135,
         'sgr':0.2,
-        'sor':0.1,
+        'sor':0.0,
         'nw':2.46,
         'ng':1.3,
         'no':2.0,
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     cbar.set_label(r'$\nabla p$ [psi/ft]')
     plt.xlabel(r'$u_w$ [ft/day]')
     plt.ylabel(r'$u_g$ [ft/day]')
-    plt.title(r'$u_o/u_w = 1/4$')
+    plt.title('no oil')
     plt.grid(True)
     plt.tight_layout()
     plt.xlim([0,1.8])
@@ -192,7 +192,7 @@ if __name__ == '__main__':
     # cbar.set_label(r'$\nabla p$ [psi/ft]')
     plt.xlabel(r'$u_w$ [ft/day]')
     plt.ylabel(r'$u_g$ [ft/day]')
-    plt.title(r'$u_o/u_w = 1/4$')
+    plt.title('no oil')
     plt.grid(True)
     plt.tight_layout()
     plt.xlim([0,1.8])
@@ -202,56 +202,73 @@ if __name__ == '__main__':
     plt.close()
     # exit()
 
-    # ## DIFFERENT UTs
-    # ut_des_1 = 2.3 # [ft/day]
-    # uw_des_1 = np.linspace(0.1,1.1,10)
-    # ug_des_1, grad_P_des_1, uo_des_1 = interpolate_gradP(ut_des_1, uw_des_1)
-    # fg_des_1 = ug_des_1 / (uw_des_1 + ug_des_1 + uo_des_1)
+    ## DIFFERENT UTs
+    ut_des_1 = 2.0 # [ft/day]
+    uw_des_1 = np.linspace(0.145,1.1,30)
+    ug_des_1, grad_P_des_1, uo_des_1 = interpolate_gradP(ut_des_1, uw_des_1)
+    fg_des_1 = ug_des_1 / (uw_des_1 + ug_des_1 + uo_des_1)
 
-    # ut_des_2 = 3.0 # [ft/day]
-    # uw_des_2 = np.linspace(0.1,1.7,20)
-    # ug_des_2, grad_P_des_2, uo_des_2 = interpolate_gradP(ut_des_2, uw_des_2)
-    # fg_des_2 = ug_des_2 / (uw_des_2 + ug_des_2 + uo_des_2)
+    ut_des_2 = 2.3 # [ft/day]
+    uw_des_2 = np.linspace(0.145,1.33,30)
+    ug_des_2, grad_P_des_2, uo_des_2 = interpolate_gradP(ut_des_2, uw_des_2)
+    fg_des_2 = ug_des_2 / (uw_des_2 + ug_des_2 + uo_des_2)
 
-    # ut_des_3 = 4.0 # [ft/day]
-    # uw_des_3 = np.linspace(0.1,1.3,20)
-    # ug_des_3, grad_P_des_3, uo_des_3 = interpolate_gradP(ut_des_3, uw_des_3)
-    # fg_des_3 = ug_des_3 / (uw_des_3 + ug_des_3 + uo_des_3)
+    ut_des_3 = 3.0 # [ft/day]
+    uw_des_3 = np.linspace(0.145,1.7,50)
+    ug_des_3, grad_P_des_3, uo_des_3 = interpolate_gradP(ut_des_3, uw_des_3)
+    fg_des_3 = ug_des_3 / (uw_des_3 + ug_des_3 + uo_des_3)
 
-    # plt.plot(fg_des_1, grad_P_des_1, label=f'$u_t = {ut_des_1}$')
-    # plt.plot(fg_des_2, grad_P_des_2, label=f'$u_t = {ut_des_2}$')
-    # plt.plot(fg_des_3, grad_P_des_3, label=f'$u_t = {ut_des_3}$')
-    # plt.xlabel(r'$f_g$ [-]', fontsize=14)
+    ut_des_4 = 4.0 # [ft/day]
+    uw_des_4 = np.linspace(0.145,1.73,40)
+    ug_des_4, grad_P_des_4, uo_des_4 = interpolate_gradP(ut_des_4, uw_des_4)
+    fg_des_4 = ug_des_4 / (uw_des_4 + ug_des_4 + uo_des_4)
+
+    ut_des_5 = 4.5 # [ft/day]
+    uw_des_5 = np.linspace(0.16,1.73,40)
+    ug_des_5, grad_P_des_5, uo_des_5 = interpolate_gradP(ut_des_5, uw_des_5)
+    fg_des_5 = ug_des_5 / (uw_des_5 + ug_des_5 + uo_des_5)
+
+
+    plt.plot(fg_des_1, grad_P_des_1, label=f'$u_t = {ut_des_1}$')
+    plt.plot(fg_des_2, grad_P_des_2, label=f'$u_t = {ut_des_2}$')
+    plt.plot(fg_des_3, grad_P_des_3, label=f'$u_t = {ut_des_3}$')
+    plt.plot(fg_des_4, grad_P_des_4, label=f'$u_t = {ut_des_4}$')
+    plt.plot(fg_des_5, grad_P_des_5, label=f'$u_t = {ut_des_5}$')
+    plt.xlabel(r'$f_g$ [-]', fontsize=14)
+    plt.ylabel(r'$\nabla p$ [psi/ft]', fontsize=14)
+    plt.title(r'no oil')
     # plt.ylabel(r'$\nabla p$ [psi/ft]', fontsize=14)
-    # plt.title(r'$u_o/u_w = 1/4$')
-    # # plt.ylabel(r'$\nabla p$ [psi/ft]', fontsize=14)
-    # plt.grid(True)
-    # plt.legend()
-    # # plt.show()
+    plt.grid(True)
+    plt.legend()
+    plt.show()
     # plt.savefig('differentUts.png', dpi=300)
-    # plt.close()
+    plt.close()
 
-    # # contourf = plt.contourf(uw_mesh, ug_mesh, grad_P_grid, levels=20, cmap='jet')
-    # contourf = plt.contour(uw_mesh, ug_mesh, grad_P_grid, levels=15, cmap='jet')
-    # plt.scatter(uwug[:,0], uwug[:,1], c=uwug[:,2], cmap='jet', edgecolor='k')
-    # scatter = plt.scatter(uw_des_1, ug_des_1, c=grad_P_des_1, cmap='jet', edgecolor='k')
-    # plt.plot([uw_des_1[0], uw_des_1[-1]], [ug_des_1[0], ug_des_1[-1]], 'k--')
-    # scatter = plt.scatter(uw_des_2, ug_des_2, c=grad_P_des_2, cmap='jet', edgecolor='k')
-    # plt.plot([uw_des_2[0], uw_des_2[-1]], [ug_des_2[0], ug_des_2[-1]], 'k--')
-    # scatter = plt.scatter(uw_des_3, ug_des_3, c=grad_P_des_3, cmap='jet', edgecolor='k')
-    # plt.plot([uw_des_3[0], uw_des_3[-1]], [ug_des_3[0], ug_des_3[-1]], 'k--')
-    # cbar = plt.colorbar(contourf)
-    # cbar.set_label(r'$\nabla p$ [psi/ft]')
-    # plt.xlabel(r'$u_w$ [ft/day]')
-    # plt.ylabel(r'$u_g$ [ft/day]')
-    # plt.title(r'$u_o/u_w = 1/4$')
-    # plt.grid(True)
-    # plt.tight_layout()
-    # plt.xlim([0,1.8])
-    # plt.ylim([0,7])
-    # # plt.show()
-    # plt.savefig('three_uwug_gradP_desired.png', dpi=300)
-    # plt.close()
+    # contourf = plt.contourf(uw_mesh, ug_mesh, grad_P_grid, levels=20, cmap='jet')
+    contourf = plt.contour(uw_mesh, ug_mesh, grad_P_grid, levels=15, cmap='jet')
+    plt.scatter(uwug[:,0], uwug[:,1], c=uwug[:,2], cmap='jet', edgecolor='k')
+    scatter = plt.scatter(uw_des_1, ug_des_1, c=grad_P_des_1, cmap='jet', edgecolor='k')
+    plt.plot([uw_des_1[0], uw_des_1[-1]], [ug_des_1[0], ug_des_1[-1]], 'k--')
+    scatter = plt.scatter(uw_des_2, ug_des_2, c=grad_P_des_2, cmap='jet', edgecolor='k')
+    plt.plot([uw_des_2[0], uw_des_2[-1]], [ug_des_2[0], ug_des_2[-1]], 'k--')
+    scatter = plt.scatter(uw_des_3, ug_des_3, c=grad_P_des_3, cmap='jet', edgecolor='k')
+    plt.plot([uw_des_3[0], uw_des_3[-1]], [ug_des_3[0], ug_des_3[-1]], 'k--')
+    scatter = plt.scatter(uw_des_4, ug_des_4, c=grad_P_des_4, cmap='jet', edgecolor='k')
+    plt.plot([uw_des_4[0], uw_des_4[-1]], [ug_des_4[0], ug_des_4[-1]], 'k--')
+    scatter = plt.scatter(uw_des_5, ug_des_5, c=grad_P_des_5, cmap='jet', edgecolor='k')
+    plt.plot([uw_des_5[0], uw_des_5[-1]], [ug_des_5[0], ug_des_5[-1]], 'k--')
+    cbar = plt.colorbar(contourf)
+    cbar.set_label(r'$\nabla p$ [psi/ft]')
+    plt.xlabel(r'$u_w$ [ft/day]')
+    plt.ylabel(r'$u_g$ [ft/day]')
+    plt.title(r'$u_o/u_w = 1/4$')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.xlim([0,1.8])
+    plt.ylim([0,7])
+    # plt.show()
+    plt.savefig('three_uwug_gradP_desired.png', dpi=300)
+    plt.close()
 
 
     ## COMPARED DESIRED VS TANG
@@ -266,13 +283,14 @@ if __name__ == '__main__':
     plt.show()
     # plt.savefig('comparison_desiredVStang.png', dpi=300)
     plt.close()
-    exit()
+    # exit()
     
-    # ug = ug_des * 3.52778e-6
-    # uw = uw_des * 3.52778e-6
-    # uo = uo_des * 3.52778e-6
-    # fg = fg_des
-    # ut_calc = uw + uo + ug
+    ug = ug_des * 3.52778e-6
+    uw = uw_des * 3.52778e-6
+    uo = uo_des * 3.52778e-6
+    fg = fg_des
+    ut_calc = uw + uo + ug
+    gradP = grad_P_des
 
     ## PLOT VELOCITIES FG
     plt.plot(fg,uw*283465,c='b',label=r'$u_w$')
@@ -297,13 +315,15 @@ if __name__ == '__main__':
     Sw = np.array(Sw)
     # print(Sw)
 
-    So = []
-    for i in range(len(fg)):
-        func = lambda So: np.abs(relPerm.kro(So) + uo[i] * muo / (core['k'] * gradP[i]))
-        res = minimize_scalar(func, bounds=(0, 1))
-        So.append(res.x)
-    So = np.array(So)
-    # print(So)
+    # So = []
+    # for i in range(len(fg)):
+    #     func = lambda So: np.abs(relPerm.kro(So) + uo[i] * muo / (core['k'] * gradP[i]))
+    #     res = minimize_scalar(func, bounds=(0, 1))
+    #     So.append(res.x)
+    # So = np.array(So)
+    # # print(So)
+
+    So = np.zeros_like(Sw)
 
     ## PLOT
     Sg = 1.0 - Sw - So
@@ -315,8 +335,8 @@ if __name__ == '__main__':
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    # plt.show()
-    plt.savefig('saturations_fg.png', dpi=300)
+    plt.show()
+    # plt.savefig('saturations_fg.png', dpi=300)
     plt.close()
 
 
