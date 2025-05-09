@@ -159,27 +159,34 @@ if __name__ == '__main__':
 
     ## DESIRED UT
     def interpolate_gradP(ut_des, uw_des):
-        ug_des = ut_des - (5/4) * uw_des
-        uo_des = 0.0
+    
+        ug_des = ut_des - uw_des
         interp_func = RegularGridInterpolator((ug_grid, uw_grid), grad_P_grid)
         points = np.column_stack((ug_des, uw_des))
         grad_P_des = interp_func(points)
+        uo_des = np.zeros_like(ug_des)
         return ug_des, grad_P_des, uo_des
     
-    ut_des = 3.0 # [ft/day]
-    uw_des = np.linspace(0.13,1.7,30)
+    # ut_des = 3.0 # [ft/day]
+    # uw_des = np.linspace(0.145,1.7,50)
 
     # ut_des = 2.3 # [ft/day]
-    # uw_des = np.linspace(0.13,1.1,10)
+    # uw_des = np.linspace(0.145,1.33,30)
 
     # ut_des = 4.0 # [ft/day]
-    # uw_des = np.linspace(0.2,1.73,20)
+    # uw_des = np.linspace(0.145,1.73,40)
+
+    ut_des = 4.5 # [ft/day]
+    uw_des = np.linspace(0.16,1.73,40)
+
+    # ut_des = 2.0 # [ft/day]
+    # uw_des = np.linspace(0.145,1.1,30)
 
     ug_des, grad_P_des, uo_des = interpolate_gradP(ut_des, uw_des)
     # contourf = plt.contourf(uw_mesh, ug_mesh, grad_P_grid, levels=20, cmap='jet')
     # contourf = plt.contour(uw_mesh, ug_mesh, grad_P_grid, levels=50, cmap='jet')
     plt.scatter(uwug[:,0], uwug[:,1], c=uwug[:,2], cmap='jet', edgecolor='k')
-    # scatter = plt.scatter(uw_des, ug_des, c=grad_P_des, cmap='jet', edgecolor='k')
+    scatter = plt.scatter(uw_des, ug_des, c=grad_P_des, cmap='jet', edgecolor='k')
     plt.plot([uw_des[0], uw_des[-1]], [ug_des[0], ug_des[-1]], 'k--')
     # cbar = plt.colorbar(contourf)
     # cbar.set_label(r'$\nabla p$ [psi/ft]')
