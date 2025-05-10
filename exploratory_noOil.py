@@ -77,14 +77,14 @@ if __name__ == '__main__':
     fgMuapp[:,1] = (fgMuapp[:,1] * 100)/1000 # Convert from [10^2 cP] to [Pa.s] 
 
 
-    # ## PLOT 
-    # plt.plot(fgMuapp[:,0], fgMuapp[:,1], '+')
-    # plt.xlabel(r'$f_g$ [-]', fontsize=14)
-    # plt.ylabel(r'$\mu_{app}$ [Pa.s]', fontsize=14)
-    # plt.grid()
-    # plt.show()
-    # # plt.savefig('muApp_fg.png', dpi=300)
-    # plt.close()
+    ## PLOT 
+    plt.plot(fgMuapp[:,0], fgMuapp[:,1], '+')
+    plt.xlabel(r'$f_g$ [-]', fontsize=14)
+    plt.ylabel(r'$\mu_{app}$ [Pa.s]', fontsize=14)
+    plt.grid()
+    plt.show()
+    # plt.savefig('muApp_fg.png', dpi=300)
+    plt.close()
 
     ## GET grad(p)
     gradP = - fgMuapp[:,1] * ut / core['k'] # [Pa/m]
@@ -266,8 +266,8 @@ if __name__ == '__main__':
     plt.tight_layout()
     plt.xlim([0,1.8])
     plt.ylim([0,7])
-    # plt.show()
-    plt.savefig('three_uwug_gradP_desired.png', dpi=300)
+    plt.show()
+    # plt.savefig('three_uwug_gradP_desired.png', dpi=300)
     plt.close()
 
 
@@ -327,9 +327,9 @@ if __name__ == '__main__':
 
     ## PLOT
     Sg = 1.0 - Sw - So
-    plt.plot(fg,Sw,c='b',label=r'$S_w$')
+    # plt.plot(fg,Sw,c='b',label=r'$S_w$')
     plt.plot(fg,Sg,c='g',label=r'$S_g$')
-    plt.plot(fg,So,c='r',label=r'$S_o$')
+    # plt.plot(fg,So,c='r',label=r'$S_o$')
     plt.xlabel(r'$f_g$ [-]')
     plt.ylabel(r'phase saturation [-]')
     plt.grid(True)
@@ -339,6 +339,38 @@ if __name__ == '__main__':
     # plt.savefig('saturations_fg.png', dpi=300)
     plt.close()
 
+
+    # MuApp vs ut given a fg
+    fgs_plot = [0.5, 0.6, 0.7, 0.8]
+
+    for i in range(len(fgs_plot)):
+        fg_plot = fgs_plot[i]
+
+        idx_fg = np.array([
+            np.argmin(np.abs(fg_des_1 - fg_plot)),
+            np.argmin(np.abs(fg_des_2 - fg_plot)),
+            np.argmin(np.abs(fg_des_3 - fg_plot)),
+            np.argmin(np.abs(fg_des_4 - fg_plot)),
+            np.argmin(np.abs(fg_des_5 - fg_plot)),
+        ])
+
+        ut_plot = np.array([ut_des_1, ut_des_2, ut_des_3, ut_des_4, ut_des_5]) * 3.52778e-6
+
+        MuApp_plot = np.array([
+            (core['k']/ut_plot[0])*(grad_P_des_1[idx_fg[0]]/4.419e-5),
+            (core['k']/ut_plot[1])*(grad_P_des_2[idx_fg[1]]/4.419e-5),
+            (core['k']/ut_plot[2])*(grad_P_des_3[idx_fg[2]]/4.419e-5),
+            (core['k']/ut_plot[3])*(grad_P_des_4[idx_fg[3]]/4.419e-5),
+            (core['k']/ut_plot[4])*(grad_P_des_5[idx_fg[4]]/4.419e-5)
+        ])
+
+        plt.plot(ut_plot*283465, MuApp_plot*1e3, '-o', label=f'$f_g = {fg_plot}$')
+    
+    plt.xlabel(r'$u_t$ [ft/day]')
+    plt.ylabel(r'$\mu_{app}$ [cP]')
+    plt.grid(True)
+    plt.legend()
+    plt.show()  
 
     ## SAVE EXPERIMENTAL DATA
     data = {
